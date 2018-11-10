@@ -21,5 +21,17 @@ soup = BeautifulSoup(websiteURL.content, 'html.parser')
 #pTag = list(body.children)[1]
 #print(pTag.get_text())
 
-#how to find all tags of a specific type on a page
+#difference between find and find_all is that find returns one object while find_all returns all objects
+forecastContainer = soup.find(id="seven-day-forecast")
+forecast7 = forecastContainer.find_all(class_="tombstone-container")
+
+periodTags = forecastContainer.select(".tombstone-container .period-name")
+
+periods = [pt.get_text() for pt in periodTags]
+descriptions = [desc.get_text() for desc in forecastContainer.select(".tombstone-container .short-desc")]
+temps = [temp.get_text() for temp in forecastContainer.select(".tombstone-container .temp")]
+
+print(periods)
+print(descriptions)
+print(temps)
 
