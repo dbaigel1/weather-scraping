@@ -43,7 +43,7 @@ weatherTable = pd.DataFrame({
     "Temperature" : temps
 
 	})
-
+#Before analysis
 print(weatherTable)
 
 #do some analysis (figure out weekly avg temp)
@@ -51,13 +51,33 @@ tempNums = weatherTable["Temperature"].str.extract("(?P<temp_num>\d+)", expand=F
 weatherTable["Temp Num"] = tempNums.astype('int')
 
 avgTemp = weatherTable["Temp Num"].mean()
-print(avgTemp)
+
 weatherTable["Avg Weekly Temp"] = avgTemp
 
-print(weatherTable)
 
 #now figure out avg nightly temp and avg day temp
+isNight = weatherTable["Temperature"].str.contains("Low")
+weatherTable["Night"] = isNight
 
+row = 0
+avgNightlyTemps = []
+avgDailyTemps = []
+for temp in weatherTable["Temp Num"]:
+	if weatherTable["Night"][row] == True:
+	
+		avgNightlyTemps.append(temp)
+	else:
+		avgDailyTemps.append(temp)
+	row += 1
+
+avgDaily = sum(avgDailyTemps)/len(avgDailyTemps)
+avgNightly = sum(avgNightlyTemps)/len(avgNightlyTemps)
+
+weatherTable["Avg D Temp"] = avgDaily
+weatherTable["Avg N Temp"] = avgNightly
+
+#after analysis
+print(weatherTable)
 
 
 
