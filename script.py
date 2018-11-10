@@ -1,12 +1,12 @@
 #A script to scrape music data from the web and analyze the data using beautiful soup and pandas etc.
 
 from bs4 import BeautifulSoup
-#library for getting html from url
-#import urllib -- this wasn't working...
 import requests
+import pandas as pd
 
 
-websiteURL = requests.get("https://forecast.weather.gov/MapClick.php?lat=37.7772&lon=-122.4168") #https://pitchfork.com/reviews/albums/
+
+websiteURL = requests.get("https://forecast.weather.gov/MapClick.php?lat=40.7146&lon=-74.0071") #https://pitchfork.com/reviews/albums/
 
 if websiteURL.status_code != 200:
     print(websiteURL.status_code + "\n")
@@ -22,6 +22,7 @@ soup = BeautifulSoup(websiteURL.content, 'html.parser')
 #print(pTag.get_text())
 
 #difference between find and find_all is that find returns one object while find_all returns all objects
+#zone in on specific area of website to scrape
 forecastContainer = soup.find(id="seven-day-forecast")
 forecast7 = forecastContainer.find_all(class_="tombstone-container")
 
@@ -34,4 +35,36 @@ temps = [temp.get_text() for temp in forecastContainer.select(".tombstone-contai
 print(periods)
 print(descriptions)
 print(temps)
+
+#now create dataframe using pandas
+weatherTable = pd.DataFrame({
+    "Period" : periods,
+    "Description" : descriptions,
+    "Temperature" : temps
+
+	})
+
+print(weatherTable)
+
+#do some analysis (figure out weekly avg temp)
+tempNums = weatherTable["Temperature"].str.extract("(?P<temp_num>\d+)", expand=False)
+weatherTable["Temp Num"] = tempNums.astype('int')
+
+avgTemp = weatherTable["Temp Num"].mean()
+print(avgTemp)
+weatherTable["Avg Weekly Temp"] = avgTemp
+
+print(weatherTable)
+
+#now figure out avg nightly temp and avg day temp
+
+
+
+
+
+
+
+
+
+
 
